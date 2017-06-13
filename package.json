@@ -1,0 +1,123 @@
+{
+  "name": "git-extended",
+  "displayName": "Git Extended",
+  "description": "Git Extended",
+  "version": "0.0.1",
+  "publisher": "rebornix",
+  "engines": {
+    "vscode": "^1.13.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+	  "onView:commits",
+	  "onView:stash"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "commits",
+          "name": "Git Commits"
+        },
+        {
+          "id": "stash",
+          "name": "Git Stashes"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "commits.revertEntry",
+        "title": "Revert",
+        "icon": {
+          "dark": "resources/icons/dark/clean.svg",
+          "light": "resources/icons/light/clean.svg"
+        }
+      },
+      {
+        "command": "commits.deleteEntry",
+        "title": "Delete"
+      },
+      {
+        "command": "commits.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "dark": "resources/dark/refresh.svg",
+          "light": "resources/light/refresh.svg"
+        }
+      },
+      {
+        "command": "pr.refreshList",
+        "title": "Refresh",
+        "icon": {
+          "dark": "resources/dark/refresh.svg",
+          "light": "resources/light/refresh.svg"
+        }
+      },
+      {
+        "command": "stash.apply",
+        "title": "Apply Stash"
+      },
+      {
+        "command": "stash.delete",
+        "title": "Delete Stash"
+      },
+      {
+        "command": "stash.pop",
+        "title": "Pop Stash"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "commits.refreshEntry",
+          "when": "view == commits",
+          "group": "navigation"
+        },
+        {
+          "command": "commits.revertEntry",
+          "when": "view == commits"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "commits.deleteEntry",
+          "when": "view == commits"
+        },
+        {
+          "command": "commits.revertEntry",
+          "when": "view == commits"
+        },
+        {
+          "command": "stash.apply",
+          "when": "view == stash"
+        },
+        {
+          "command": "stash.pop",
+          "when": "view == stash"
+        },
+        {
+          "command": "stash.delete",
+          "when": "view == stash"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "typescript": "^2.1.4",
+    "vscode": "^1.0.0",
+    "@types/node": "*"
+  },
+  "dependencies": {
+    "dugite": "^1.28.0",
+    "tmp": "^0.0.31"
+  }
+}
