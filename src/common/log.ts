@@ -55,3 +55,21 @@ export async function getCommits(repository: Repository, revisionRange: string, 
 
     return commits;
 }
+
+export async function isWorkingTreeClean(repository: Repository): Promise<boolean> {
+    const result = await GitProcess.exec(
+        [
+            'diff-index',
+            '--quiet',
+            'HEAD',
+            '--'
+        ],
+        repository.path
+    );
+    let exitCode = result.exitCode;
+    if (exitCode !== 0) {
+        return false;
+    } else {
+        return true;
+    }
+}

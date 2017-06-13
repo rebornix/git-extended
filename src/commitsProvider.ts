@@ -73,6 +73,8 @@ export class CommitsProvider implements vscode.TreeDataProvider<CommitTreeItem> 
     private workspaceRoot: string;
     private repository: Repository;
     private icons: any;
+    private _onDidChangeTreeData: vscode.EventEmitter<CommitTreeItem | undefined> = new vscode.EventEmitter<CommitTreeItem | undefined>();
+    readonly onDidChangeTreeData: vscode.Event<CommitTreeItem | undefined> = this._onDidChangeTreeData.event;
 
     active(context: vscode.ExtensionContext, workspaceRoot: string) {
         this.context = context;
@@ -101,7 +103,15 @@ export class CommitsProvider implements vscode.TreeDataProvider<CommitTreeItem> 
                 Ignored: context.asAbsolutePath(path.join('resources', 'icons', 'dark', 'status-ignored.svg')),
                 Conflict: context.asAbsolutePath(path.join('resources', 'icons', 'dark', 'status-conflict.svg'))
             }
-		};
+        };
+        
+        vscode.commands.registerCommand('commits.refresh', async (args) => {
+            this._onDidChangeTreeData.fire();
+        });
+        vscode.commands.registerCommand('commits.revertCommit', async (element) => {
+            // TODO
+            // We can want to allow users to revert several commits
+        });
     }
 
     getTreeItem(element: CommitTreeItem | FileChangeItem ): vscode.TreeItem {

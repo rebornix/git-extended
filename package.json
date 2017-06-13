@@ -30,7 +30,7 @@
     },
     "commands": [
       {
-        "command": "commits.revertEntry",
+        "command": "commits.revertCommit",
         "title": "Revert",
         "icon": {
           "dark": "resources/icons/dark/clean.svg",
@@ -38,23 +38,19 @@
         }
       },
       {
-        "command": "commits.deleteEntry",
-        "title": "Delete"
-      },
-      {
-        "command": "commits.refreshEntry",
+        "command": "commits.refresh",
         "title": "Refresh",
         "icon": {
-          "dark": "resources/dark/refresh.svg",
-          "light": "resources/light/refresh.svg"
+          "dark": "resources/icons/dark/refresh.svg",
+          "light": "resources/icons/light/refresh.svg"
         }
       },
       {
         "command": "pr.refreshList",
         "title": "Refresh",
         "icon": {
-          "dark": "resources/dark/refresh.svg",
-          "light": "resources/light/refresh.svg"
+          "dark": "resources/icons/dark/refresh.svg",
+          "light": "resources/icons/light/refresh.svg"
         }
       },
       {
@@ -68,29 +64,30 @@
       {
         "command": "stash.pop",
         "title": "Pop Stash"
+      },
+      {
+        "command": "stash.stash",
+        "title": "Stash",
+        "icon": {
+          "dark": "resources/icons/dark/stage.svg",
+          "light": "resources/icons/light/stage.svg"
+        }
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "commits.refreshEntry",
+          "command": "commits.refresh",
           "when": "view == commits",
           "group": "navigation"
         },
         {
-          "command": "commits.revertEntry",
-          "when": "view == commits"
+          "command": "stash.stash",
+          "when": "view == stash",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
-        {
-          "command": "commits.deleteEntry",
-          "when": "view == commits"
-        },
-        {
-          "command": "commits.revertEntry",
-          "when": "view == commits"
-        },
         {
           "command": "stash.apply",
           "when": "view == stash"

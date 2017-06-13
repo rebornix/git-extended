@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { getStashes, applyStash, popStash, dropStash, getChangedFilesInStash } from './common/stash';
+import { getStashes, saveStash, applyStash, popStash, dropStash, getChangedFilesInStash } from './common/stash';
 import { getFile } from './common/file';
 import { Stash, StashFile } from './common/models/stash';
 import { GitChangeType } from './common/models/file';
 import { Repository } from './common//models/repository';
-import { getParentCommit } from './common/log';
+import { getParentCommit, isWorkingTreeClean } from './common/log';
 
 export class StashProvider implements vscode.TreeDataProvider<Stash | StashFile> {
     private context: vscode.ExtensionContext;
@@ -47,15 +47,43 @@ export class StashProvider implements vscode.TreeDataProvider<Stash | StashFile>
 		};
         
         vscode.commands.registerCommand('stash.apply', async (element: Stash) => {
+            const clean = await isWorkingTreeClean(this.repository);
+            if (!clean) {
+                vscode.window.showWarningMessage(
+                    'You have uncommitted changes. Are you sure you want to apply stash on top of your changes',
+                    // { modal: true },
+                    'Cancel',
+                    'Apply Stash'
+                ).then(async (value) => {
+                    if (value === 'Apply Stash') {
+                        await applyStash(this.repository, element.id);
+                        this._onDidChangeTreeData.fire();
+                    }
+			    });
+            }
             await applyStash(this.repository, element.id);
             this._onDidChangeTreeData.fire();
         });
         vscode.commands.registerCommand('stash.pop', async (element: Stash) => {
+            const clean = await isWorkingTreeClean(this.repository);
+            if (!clean) {
+                vscode.window.showWarningMessage(
+                    'You have uncommitted changes. Are you sure you want to apply stash on top of your changes and delete the stash',
+                    // { modal: true },
+                    'Cancel',
+                    'Pop Stash'
+                ).then(async (value) => {
+                    if (value === 'Pop Stash') {
+                        await popStash(this.repository, element.id);
+                        this._onDidChangeTreeData.fire();
+                    }
+                });
+			}
             await popStash(this.repository, element.id);
             this._onDidChangeTreeData.fire();
         });
         vscode.commands.registerCommand('stash.delete', async (element: Stash) => {
-            await dropStash(this.repository, element.id);
+        await dropStash(this.repository, element.id);
             this._onDidChangeTreeData.fire();
         });
         vscode.commands.registerCommand('stash.diff', async (element: StashFile) => {
@@ -75,6 +103,14 @@ export class StashProvider implements vscode.TreeDataProvider<Stash | StashFile>
             } else {
                 let right = await getFile(element.commitSha, element.path);                
                 vscode.commands.executeCommand('vscode.open', vscode.Uri.file(path.resolve(this.workspaceRoot, right)));
+            }
+        });
+        vscode.commands.registerCommand('stash.stash', async () => {
+            try {
+                await saveStash(this.repository);
+                this._onDidChangeTreeData.fire();
+            } catch (e) {
+                vscode.window.showErrorMessage(e);
             }
         });
     }

@@ -39,11 +39,15 @@ export async function getStashes(repository: Repository): Promise<ReadonlyArray<
     return stashes;
 }
 export async function applyStash(repository: Repository, stashId: string): Promise<void> {
-    await GitProcess.exec([
+    const result = await GitProcess.exec([
         'stash',
         'apply',
         stashId
     ], repository.path);
+
+    if (result.exitCode !== 0) {
+        throw(result.stderr);
+    }
 }
 export async function popStash(repository: Repository, stashId: string): Promise<void> {
     await GitProcess.exec([
@@ -53,13 +57,26 @@ export async function popStash(repository: Repository, stashId: string): Promise
     ], repository.path);
 }
 export async function dropStash(repository: Repository, stashId: string): Promise<void> {
-    await GitProcess.exec([
+    const result = await GitProcess.exec([
         'stash',
         'drop',
         stashId
     ], repository.path);
+    
+    if (result.exitCode !== 0) {
+        throw(result.stderr);
+    }
 }
-
+export async function saveStash(repository: Repository): Promise<void> {
+    const result = await GitProcess.exec([
+        'stash',
+        'save'
+    ], repository.path);
+    
+    if (result.exitCode !== 0) {
+        throw(result.stderr);
+    }
+}
 
 export async function getChangedFilesInStash(repository: Repository, stash: Stash, commitSha: string): Promise<StashFile[]> {
     const result = await GitProcess.exec([
